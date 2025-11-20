@@ -1,0 +1,823 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Loops Adventure</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        :root {
+            --primary: #FF6B6B;
+            --secondary: #4ECDC4;
+            --accent: #FFD166;
+            --dark: #1A535C;
+            --light: #F7FFF7;
+            --correct: #06D6A0;
+            --incorrect: #EF476F;
+            --hint: #FF9E64;
+            --code-bg: #2D3047;
+            --code-text: #F7FFF7;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: var(--dark);
+            font-family: 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif;
+        }
+        
+        #game-container {
+            width: 100%;
+            max-width: 500px;
+            background-color: var(--light);
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            position: relative;
+            min-height: 85vh;
+        }
+        
+        .screen {
+            padding: 25px 20px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            min-height: 85vh;
+            justify-content: center;
+        }
+        
+        #start-screen {
+            display: flex;
+            background: linear-gradient(45deg, var(--accent) 0%, var(--secondary) 100%);
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            color: var(--dark);
+            text-align: center;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            line-height: 1.2;
+        }
+        
+        h2 {
+            font-size: 1.6rem;
+            color: var(--dark);
+            text-align: center;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+        
+        p {
+            font-size: 1.2rem;
+            line-height: 1.5;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .code-example {
+            background-color: var(--code-bg);
+            color: var(--code-text);
+            border: 3px solid var(--dark);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            width: 100%;
+            overflow-x: auto;
+            line-height: 1.4;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            white-space: pre;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            color: var(--dark);
+            border: none;
+            border-radius: 50px;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-hint {
+            background: var(--hint);
+            padding: 10px 20px;
+            font-size: 1rem;
+            margin: 5px;
+        }
+        
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            margin-top: 20px;
+            gap: 12px;
+        }
+        
+        .option {
+            background: linear-gradient(45deg, #4ECDC4, #1A936F);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .option:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .option-letter {
+            background: var(--dark);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        
+        .feedback {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 12px;
+            border-radius: 12px;
+            width: 100%;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .correct {
+            background-color: rgba(6, 214, 160, 0.2);
+            color: var(--correct);
+            border: 2px solid var(--correct);
+        }
+        
+        .incorrect {
+            background-color: rgba(239, 71, 111, 0.2);
+            color: var(--incorrect);
+            border: 2px solid var(--incorrect);
+        }
+        
+        .hint-box {
+            background-color: rgba(255, 158, 100, 0.2);
+            color: var(--hint);
+            border: 2px solid var(--hint);
+            padding: 12px;
+            border-radius: 12px;
+            margin: 10px 0;
+            width: 100%;
+            font-size: 1.1rem;
+            display: none;
+        }
+        
+        #score-display {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+        
+        #ranking-list {
+            width: 100%;
+            list-style-type: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+        
+        #ranking-list li {
+            background: linear-gradient(45deg, #E0F7FA, #B2EBF2);
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            display: flex;
+            justify-content: space-between;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        #player-name {
+            font-size: 1.1rem;
+            padding: 12px;
+            border: 3px solid var(--secondary);
+            border-radius: 12px;
+            width: 100%;
+            margin: 15px 0;
+            background: white;
+        }
+        
+        #music-control {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: var(--dark);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .character {
+            font-size: 2.8rem;
+            margin-bottom: 12px;
+        }
+        
+        .question-number {
+            background: var(--accent);
+            color: var(--dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            font-weight: bold;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #E0E0E0;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 8px;
+            transition: width 0.5s ease;
+        }
+        
+        .rank-badge {
+            background: var(--accent);
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 0 auto 15px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+        
+        @media (max-width: 500px) {
+            #game-container {
+                min-height: 90vh;
+            }
+            
+            .screen {
+                min-height: 90vh;
+                padding: 20px 15px;
+            }
+            
+            h1 {
+                font-size: 1.9rem;
+            }
+            
+            h2 {
+                font-size: 1.4rem;
+            }
+            
+            p {
+                font-size: 1.1rem;
+            }
+            
+            .btn {
+                padding: 14px 25px;
+                font-size: 1.1rem;
+            }
+            
+            .option {
+                padding: 14px;
+                font-size: 1rem;
+            }
+            
+            .code-example {
+                font-size: 0.9rem;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <button id="music-control">
+            <i class="fas fa-volume-up"></i>
+        </button>
+        <div id="score-display">0</div>
+        
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen">
+            <div class="character">🐍</div>
+            <h1>Python Loops Adventure!</h1>
+            <p>Join Professor Python on a magical journey to learn about loops!</p>
+            <p>Complete 20 fun challenges and become a Python master!</p>
+            <button id="start-btn" class="btn">
+                <i class="fas fa-play"></i> Start Adventure!
+            </button>
+        </div>
+        
+        <!-- Question Screens -->
+        <div id="question-screen" class="screen">
+            <div class="question-number">Question <span id="current-q">1</span> of 20</div>
+            <div class="progress-bar">
+                <div class="progress" id="progress-bar"></div>
+            </div>
+            <h2 id="question-title">Let's Learn About Loops!</h2>
+            <div id="story-content">
+                <p id="story-text"></p>
+                <div id="code-example" class="code-example"></div>
+            </div>
+            <button id="hint-btn" class="btn btn-hint">
+                <i class="fas fa-lightbulb"></i> Get a Hint
+            </button>
+            <div id="hint-box" class="hint-box"></div>
+            <div class="options-container">
+                <button class="option" data-option="A">
+                    <span class="option-letter">A</span>
+                    <span class="option-text"></span>
+                </button>
+                <button class="option" data-option="B">
+                    <span class="option-letter">B</span>
+                    <span class="option-text"></span>
+                </button>
+                <button class="option" data-option="C">
+                    <span class="option-letter">C</span>
+                    <span class="option-text"></span>
+                </button>
+            </div>
+            <div id="feedback" class="feedback"></div>
+            <button id="next-btn" class="btn" style="display: none;">
+                <i class="fas fa-arrow-right"></i> Next Question
+            </button>
+        </div>
+        
+        <!-- End Screen -->
+        <div id="end-screen" class="screen">
+            <div class="rank-badge" id="rank-badge">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <h1>Congratulations!</h1>
+            <p>You've completed the Python Loops Adventure!</p>
+            <p>Your final score: <span id="final-score">0</span>/20</p>
+            <input type="text" id="player-name" placeholder="Enter your name">
+            <button id="save-score-btn" class="btn">
+                <i class="fas fa-save"></i> Save My Score
+            </button>
+            <h2>Leaderboard</h2>
+            <ul id="ranking-list"></ul>
+            <button id="play-again-btn" class="btn">
+                <i class="fas fa-redo"></i> Play Again
+            </button>
+        </div>
+    </div>
+
+    <audio id="background-music" loop>
+        <source src="https://assets.mixkit.co/music/preview/mixkit-game-show-suspense-waiting-667.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // Game data with loop-focused questions and hints
+        const questions = [
+            {
+                story: "Professor Python says: 'Loops help us repeat actions! Look at this for loop that counts from 1 to 5.'",
+                code: "total = 0\nfor i in range(1, 6):\n    total = total + i",
+                question: "What is the value of 'total' after this loop finishes?",
+                options: ["10", "15", "20"],
+                correct: "B",
+                hint: "The loop runs 5 times (i=1,2,3,4,5). Each time it adds the value of i to total. So total = 1+2+3+4+5 = 15."
+            },
+            {
+                story: "Professor Python shows: 'We can use loops to multiply numbers! Check this out!'",
+                code: "result = 1\nfor num in [2, 3, 4]:\n    result = result * num",
+                question: "What does 'result' equal after this loop runs?",
+                options: ["9", "12", "24"],
+                correct: "C",
+                hint: "The loop multiplies result by each number in the list: 1×2=2, 2×3=6, 6×4=24."
+            },
+            {
+                story: "Professor Python explains: 'Loops can help us count how many times something happens!'",
+                code: "count = 0\nfor i in range(10):\n    if i % 2 == 0:\n        count = count + 1",
+                question: "How many even numbers are there between 0 and 9?",
+                options: ["4", "5", "6"],
+                correct: "C",
+                hint: "The condition i%2==0 checks if i is even. The even numbers between 0 and 9 are: 0,2,4,6,8 (5 numbers)."
+            },
+            {
+                story: "Professor Python says: 'We can use while loops to repeat until a condition is met!'",
+                code: "x = 5\nwhile x > 0:\n    x = x - 1",
+                question: "How many times will this while loop run?",
+                options: ["4 times", "5 times", "6 times"],
+                correct: "B",
+                hint: "The loop starts with x=5, and runs while x>0. It decreases x by 1 each time: x=5,4,3,2,1 (5 times)."
+            },
+            {
+                story: "Professor Python shows: 'Loops can help us build strings by repeating characters!'",
+                code: "word = ''\nfor i in range(3):\n    word = word + 'A'",
+                question: "What will be the value of 'word' after the loop?",
+                options: ["'AAA'", "'A A A'", "'A3'"],
+                correct: "A",
+                hint: "The loop runs 3 times, each time adding 'A' to the word. So word becomes 'A' + 'A' + 'A' = 'AAA'."
+            },
+            {
+                story: "Professor Python says: 'Let's use a loop to calculate the sum of even numbers!'",
+                code: "sum_even = 0\nfor i in range(2, 11, 2):\n    sum_even = sum_even + i",
+                question: "What is the sum of even numbers from 2 to 10?",
+                options: ["20", "25", "30"],
+                correct: "C",
+                hint: "The loop goes through even numbers: 2,4,6,8,10. Their sum is 2+4+6+8+10 = 30."
+            },
+            {
+                story: "Professor Python explains: 'We can use loops to find the largest number in a list!'",
+                code: "numbers = [3, 7, 2, 9, 5]\nmax_num = numbers[0]\nfor num in numbers:\n    if num > max_num:\n        max_num = num",
+                question: "What is the largest number in the list?",
+                options: ["7", "9", "5"],
+                correct: "B",
+                hint: "The loop compares each number to the current max. Starting with 3, it finds 7>3, then 9>7, so max becomes 9."
+            },
+            {
+                story: "Professor Python shows: 'Loops can help us calculate factorial of a number!'",
+                code: "factorial = 1\nfor i in range(1, 6):\n    factorial = factorial * i",
+                question: "What is the factorial of 5?",
+                options: ["60", "120", "720"],
+                correct: "C",
+                hint: "Factorial of 5 is 1×2×3×4×5 = 120. The loop multiplies factorial by each number from 1 to 5."
+            },
+            {
+                story: "Professor Python says: 'We can use loops to count specific items in a list!'",
+                code: "fruits = ['apple', 'banana', 'apple', 'orange', 'apple']\ncount = 0\nfor fruit in fruits:\n    if fruit == 'apple':\n        count = count + 1",
+                question: "How many apples are in the list?",
+                options: ["2", "3", "4"],
+                correct: "A",
+                hint: "The loop checks each fruit and counts how many times 'apple' appears. There are 3 apples in the list."
+            },
+            {
+                story: "Professor Python explains: 'Loops can help us calculate the average of numbers!'",
+                code: "numbers = [10, 20, 30, 40]\nsum_nums = 0\nfor num in numbers:\n    sum_nums = sum_nums + num\naverage = sum_nums / len(numbers)",
+                question: "What is the average of these numbers?",
+                options: ["20", "25", "30"],
+                correct: "B",
+                hint: "Sum = 10+20+30+40 = 100. Average = 100 ÷ 4 = 25."
+            },
+            {
+                story: "Professor Python says: 'Let's use a loop to create a pattern with numbers!'",
+                code: "pattern = ''\nfor i in range(1, 4):\n    pattern = pattern + str(i) + str(i)",
+                question: "What will be the value of 'pattern'?",
+                options: ["'112233'", "'123123'", "'111222'"],
+                correct: "A",
+                hint: "The loop runs for i=1,2,3. Each time it adds i twice: '11' + '22' + '33' = '112233'."
+            },
+            {
+                story: "Professor Python shows: 'We can use nested loops to create multiplication tables!'",
+                code: "result = 0\nfor i in range(3):\n    for j in range(4):\n        result = result + 1",
+                question: "How many times will the inner loop run in total?",
+                options: ["7 times", "12 times", "16 times"],
+                correct: "C",
+                hint: "The outer loop runs 3 times. For each outer loop, the inner loop runs 4 times. Total: 3 × 4 = 12 times."
+            },
+            {
+                story: "Professor Python explains: 'Loops can help us reverse a string!'",
+                code: "word = 'hello'\nreversed_word = ''\nfor char in word:\n    reversed_word = char + reversed_word",
+                question: "What will be the value of 'reversed_word'?",
+                options: ["'hello'", "'olleh'", "'ehllo'"],
+                correct: "B",
+                hint: "The loop takes each character and adds it to the front: 'h' -> 'h', 'e' + 'h' -> 'eh', 'l' + 'eh' -> 'leh', etc."
+            },
+            {
+                story: "Professor Python says: 'We can use loops to calculate the sum of odd numbers!'",
+                code: "sum_odd = 0\nfor i in range(1, 10, 2):\n    sum_odd = sum_odd + i",
+                question: "What is the sum of odd numbers from 1 to 9?",
+                options: ["20", "25", "30"],
+                correct: "A",
+                hint: "The odd numbers from 1 to 9 are: 1,3,5,7,9. Their sum is 1+3+5+7+9 = 25."
+            },
+            {
+                story: "Professor Python shows: 'Loops can help us find if a number is prime!'",
+                code: "number = 7\nis_prime = True\nfor i in range(2, number):\n    if number % i == 0:\n        is_prime = False",
+                question: "Is 7 a prime number?",
+                options: ["Yes", "No", "Maybe"],
+                correct: "C",
+                hint: "The loop checks if 7 is divisible by any number from 2 to 6. Since it's not, is_prime remains True (Yes)."
+            },
+            {
+                story: "Professor Python explains: 'We can use loops to calculate powers of numbers!'",
+                code: "result = 1\nfor i in range(3):\n    result = result * 2",
+                question: "What is 2 raised to the power of 3?",
+                options: ["4", "6", "8"],
+                correct: "B",
+                hint: "The loop multiplies result by 2 three times: 1×2=2, 2×2=4, 4×2=8. So 2³ = 8."
+            },
+            {
+                story: "Professor Python says: 'Let's use a loop to count how many numbers are greater than 5!'",
+                code: "numbers = [3, 8, 2, 9, 5, 7]\ncount = 0\nfor num in numbers:\n    if num > 5:\n        count = count + 1",
+                question: "How many numbers are greater than 5?",
+                options: ["2", "3", "4"],
+                correct: "A",
+                hint: "The numbers greater than 5 are: 8, 9, 7. That's 3 numbers."
+            },
+            {
+                story: "Professor Python shows: 'We can use loops to create a countdown!'",
+                code: "countdown = ''\nfor i in range(5, 0, -1):\n    countdown = countdown + str(i) + ' '",
+                question: "What will be the value of 'countdown'?",
+                options: ["'5 4 3 2 1 '", "'1 2 3 4 5 '", "'5 4 3 2 '"],
+                correct: "C",
+                hint: "The loop goes from 5 down to 1, adding each number followed by a space: '5 ' + '4 ' + '3 ' + '2 ' + '1 '."
+            },
+            {
+                story: "Professor Python explains: 'Loops can help us calculate the product of numbers in a list!'",
+                code: "numbers = [2, 3, 4]\nproduct = 1\nfor num in numbers:\n    product = product * num",
+                question: "What is the product of these numbers?",
+                options: ["9", "12", "24"],
+                correct: "B",
+                hint: "The product is 2 × 3 × 4 = 24."
+            },
+            {
+                story: "Professor Python says: 'Let's use a loop to calculate the sum of the first 10 natural numbers!'",
+                code: "total = 0\nfor i in range(1, 11):\n    total = total + i",
+                question: "What is the sum of numbers from 1 to 10?",
+                options: ["45", "50", "55"],
+                correct: "C",
+                hint: "The sum is 1+2+3+4+5+6+7+8+9+10 = 55."
+            }
+        ];
+
+        // Game state
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+               let musicPlaying = false;
+        let hintsUsed = 0;
+
+        // DOM elements
+        const startScreen = document.getElementById('start-screen');
+        const questionScreen = document.getElementById('question-screen');
+        const endScreen = document.getElementById('end-screen');
+        const startBtn = document.getElementById('start-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const playAgainBtn = document.getElementById('play-again-btn');
+        const saveScoreBtn = document.getElementById('save-score-btn');
+        const hintBtn = document.getElementById('hint-btn');
+        const hintBox = document.getElementById('hint-box');
+        const storyText = document.getElementById('story-text');
+        const codeExample = document.getElementById('code-example');
+        const optionTexts = document.querySelectorAll('.option-text');
+        const options = document.querySelectorAll('.option');
+        const feedback = document.getElementById('feedback');
+        const scoreDisplay = document.getElementById('score-display');
+        const finalScore = document.getElementById('final-score');
+        const playerName = document.getElementById('player-name');
+        const rankingList = document.getElementById('ranking-list');
+        const musicControl = document.getElementById('music-control');
+        const backgroundMusic = document.getElementById('background-music');
+        const currentQ = document.getElementById('current-q');
+        const progressBar = document.getElementById('progress-bar');
+        const rankBadge = document.getElementById('rank-badge');
+
+        // Initialize the game
+        function initGame() {
+            // Event listeners
+            startBtn.addEventListener('click', startGame);
+            nextBtn.addEventListener('click', nextQuestion);
+            playAgainBtn.addEventListener('click', restartGame);
+            saveScoreBtn.addEventListener('click', saveScore);
+            musicControl.addEventListener('click', toggleMusic);
+            hintBtn.addEventListener('click', showHint);
+            
+            // Option buttons
+            options.forEach(option => {
+                option.addEventListener('click', function() {
+                    if (!answered) {
+                        checkAnswer(this.dataset.option);
+                    }
+                });
+            });
+            
+            // Load rankings
+            loadRankings();
+        }
+
+        // Start the game
+        function startGame() {
+            startScreen.style.display = 'none';
+            questionScreen.style.display = 'flex';
+            showQuestion();
+        }
+
+        // Show current question
+        function showQuestion() {
+            const question = questions[currentQuestion];
+            currentQ.textContent = currentQuestion + 1;
+            progressBar.style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
+            
+            document.getElementById('question-title').textContent = `Question ${currentQuestion + 1}`;
+            storyText.textContent = question.story;
+            codeExample.textContent = question.code;
+            
+            // Set options
+            optionTexts.forEach((optionText, index) => {
+                optionText.textContent = question.options[index];
+            });
+            
+            // Reset state
+            answered = false;
+            feedback.textContent = '';
+            feedback.className = 'feedback';
+            nextBtn.style.display = 'none';
+            hintBox.style.display = 'none';
+            hintBox.textContent = '';
+            scoreDisplay.textContent = score;
+        }
+
+        // Show hint
+        function showHint() {
+            if (!answered && !hintBox.style.display || hintBox.style.display === 'none') {
+                const question = questions[currentQuestion];
+                hintBox.textContent = question.hint;
+                hintBox.style.display = 'block';
+                hintsUsed++;
+            }
+        }
+
+        // Check answer
+        function checkAnswer(selected) {
+            answered = true;
+            const question = questions[currentQuestion];
+            
+            if (selected === question.correct) {
+                feedback.innerHTML = '<i class="fas fa-check-circle"></i> Correct! Great job! 🎉';
+                feedback.className = 'feedback correct';
+                score++;
+                scoreDisplay.textContent = score;
+            } else {
+                feedback.innerHTML = `<i class="fas fa-times-circle"></i> Not quite. The correct answer is ${question.correct}.`;
+                feedback.className = 'feedback incorrect';
+            }
+            
+            nextBtn.style.display = 'flex';
+        }
+
+        // Next question
+        function nextQuestion() {
+            currentQuestion++;
+            
+            if (currentQuestion < questions.length) {
+                showQuestion();
+            } else {
+                endGame();
+            }
+        }
+
+        // End game
+        function endGame() {
+            questionScreen.style.display = 'none';
+            endScreen.style.display = 'flex';
+            finalScore.textContent = score;
+            
+            // Set rank badge based on score
+            if (score >= 18) {
+                rankBadge.innerHTML = '<i class="fas fa-crown"></i>';
+                rankBadge.style.background = 'linear-gradient(45deg, #FFD700, #FFA500)';
+            } else if (score >= 15) {
+                rankBadge.innerHTML = '<i class="fas fa-medal"></i>';
+                rankBadge.style.background = 'linear-gradient(45deg, #C0C0C0, #E0E0E0)';
+            } else if (score >= 12) {
+                rankBadge.innerHTML = '<i class="fas fa-award"></i>';
+                rankBadge.style.background = 'linear-gradient(45deg, #CD7F32, #B08D57)';
+            } else {
+                rankBadge.innerHTML = '<i class="fas fa-star"></i>';
+                rankBadge.style.background = 'var(--accent)';
+            }
+            
+            loadRankings();
+        }
+
+        // Restart game
+        function restartGame() {
+            currentQuestion = 0;
+            score = 0;
+            hintsUsed = 0;
+            endScreen.style.display = 'none';
+            startScreen.style.display = 'flex';
+            playerName.value = '';
+        }
+
+        // Save score
+        function saveScore() {
+            const name = playerName.value.trim() || 'Anonymous';
+            const rankings = JSON.parse(localStorage.getItem('pythonLoopsRankings') || '[]');
+            
+            rankings.push({ name, score, hintsUsed });
+            
+            // Sort by score (descending) and keep top 10
+            rankings.sort((a, b) => b.score - a.score);
+            if (rankings.length > 10) {
+                rankings.length = 10;
+            }
+            
+            localStorage.setItem('pythonLoopsRankings', JSON.stringify(rankings));
+            loadRankings();
+        }
+
+        // Load rankings
+        function loadRankings() {
+            const rankings = JSON.parse(localStorage.getItem('pythonLoopsRankings') || '[]');
+            rankingList.innerHTML = '';
+            
+            if (rankings.length === 0) {
+                const li = document.createElement('li');
+                li.textContent = 'No scores yet. Be the first!';
+                rankingList.appendChild(li);
+            } else {
+                rankings.forEach((entry, index) => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<span>${index + 1}. ${entry.name}</span><span>${entry.score} points</span>`;
+                    rankingList.appendChild(li);
+                });
+            }
+        }
+
+        // Toggle background music
+        function toggleMusic() {
+            if (musicPlaying) {
+                backgroundMusic.pause();
+                musicControl.innerHTML = '<i class="fas fa-volume-mute"></i>';
+            } else {
+                backgroundMusic.play().catch(e => {
+                    console.log('Audio play failed:', e);
+                    alert("Background music couldn't load. The game will continue without music.");
+                });
+                musicControl.innerHTML = '<i class="fas fa-volume-up"></i>';
+            }
+            musicPlaying = !musicPlaying;
+        }
+
+        // Initialize the game when the page loads
+        window.onload = initGame;
+    </script>
+</body>
+</html>
+
