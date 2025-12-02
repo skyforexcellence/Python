@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jack樓花印花稅計算器</title>
     <style>
-        /* 全局样式重置与基础设置 */
         * {
             margin: 0;
             padding: 0;
@@ -14,8 +13,10 @@
         }
 
         body {
-            /* 浅橙色渐变背景 */
-            background: linear-gradient(135deg, #fff8f0 0%, #ffe8cc 100%);
+            /* 淺橙色動態漸變背景 */
+            background: linear-gradient(120deg, #fff9f2 0%, #ffe6cc 50%, #fff3e6 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 15s ease infinite;
             min-height: 100vh;
             padding: 20px;
             display: flex;
@@ -23,25 +24,26 @@
             align-items: flex-start;
         }
 
-        /* 计算器主容器 */
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         .calculator {
             width: 100%;
             max-width: 375px;
-            /* 白色底+轻微阴影，突出主体 */
             background-color: #ffffff;
             border-radius: 24px;
             padding: 30px 24px;
-            box-shadow: 0 8px 30px rgba(255, 183, 107, 0.15);
-            /* 轻微的橙色边框，呼应主题 */
-            border: 1px solid #ffd4ab;
+            box-shadow: 0 8px 30px rgba(255, 160, 64, 0.18);
+            border: 1px solid #ffdab3;
         }
 
-        /* 标题样式 - 橙色渐变文字 */
         h1 {
             font-size: 22px;
             font-weight: 600;
-            /* 橙色渐变文字 */
-            background: linear-gradient(90deg, #ff8c38 0%, #ff6b00 100%);
+            background: linear-gradient(90deg, #ff7a30 0%, #ff5e00 100%);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
@@ -49,14 +51,13 @@
             text-align: center;
         }
 
-        /* 输入区域 */
         .input-group {
             margin-bottom: 30px;
         }
 
         .input-label {
             font-size: 14px;
-            color: #b36520;
+            color: #a65a1a;
             margin-bottom: 8px;
             display: block;
             font-weight: 500;
@@ -65,28 +66,27 @@
         #property-price {
             width: 100%;
             padding: 16px 14px;
-            border: 1px solid #ffd4ab;
+            border: 1px solid #ffdab3;
             border-radius: 12px;
             font-size: 20px;
             color: #333333;
             outline: none;
-            background-color: #fff9f5;
+            background-color: #fffaf5;
             transition: all 0.2s ease;
         }
 
         #property-price:focus {
-            border-color: #ff8c38;
-            box-shadow: 0 0 0 4px rgba(255, 140, 56, 0.1);
+            border-color: #ff7a30;
+            box-shadow: 0 0 0 4px rgba(255, 122, 48, 0.12);
         }
 
-        /* 结果区域 */
         .result-group {
             margin-bottom: 30px;
         }
 
         .result-title {
             font-size: 14px;
-            color: #b36520;
+            color: #a65a1a;
             margin-bottom: 16px;
             display: block;
             font-weight: 500;
@@ -97,11 +97,10 @@
             justify-content: space-between;
             align-items: center;
             padding: 18px 16px;
-            /* 浅橙色渐变卡片背景 */
-            background: linear-gradient(90deg, #fff5eb 0%, #fff0e6 100%);
+            background: linear-gradient(90deg, #fff7f0 0%, #fff2e6 100%);
             border-radius: 12px;
             margin-bottom: 12px;
-            border: 1px solid #ffd4ab;
+            border: 1px solid #ffdab3;
         }
 
         .result-desc {
@@ -111,25 +110,23 @@
 
         .result-value {
             font-size: 18px;
-            /* 橙色渐变数值文字 */
-            background: linear-gradient(90deg, #ff8c38 0%, #ff6b00 100%);
+            background: linear-gradient(90deg, #ff7a30 0%, #ff5e00 100%);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
             font-weight: 600;
         }
 
-        /* 备注区域 */
         .note-box {
             padding: 18px 16px;
-            background: linear-gradient(90deg, #fff5eb 0%, #fff0e6 100%);
+            background: linear-gradient(90deg, #fff7f0 0%, #fff2e6 100%);
             border-radius: 12px;
-            border: 1px solid #ffd4ab;
+            border: 1px solid #ffdab3;
         }
 
         .note-title {
             font-size: 14px;
-            color: #b36520;
+            color: #a65a1a;
             margin-bottom: 8px;
             display: block;
             font-weight: 500;
@@ -141,7 +138,28 @@
             line-height: 1.6;
         }
 
-        /* 响应式适配 */
+        /* 新增：稅率規則說明區域 */
+        .rate-rule {
+            margin-top: 20px;
+            padding: 16px;
+            background-color: #fffaf5;
+            border-radius: 10px;
+            border-left: 3px solid #ff7a30;
+        }
+
+        .rate-rule-title {
+            font-size: 13px;
+            color: #ff7a30;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .rate-rule-text {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.5;
+        }
+
         @media (max-width: 375px) {
             .calculator {
                 border-radius: 0;
@@ -157,13 +175,13 @@
     <div class="calculator">
         <h1>樓價與印花稅計算</h1>
 
-        <!-- 楼价输入区域 -->
+        <!-- 樓價輸入區域 -->
         <div class="input-group">
             <label class="input-label">輸入樓宇價錢 (HK$)</label>
             <input type="number" id="property-price" placeholder="請輸入樓價金額" value="9000000" min="0">
         </div>
 
-        <!-- 计算结果区域 -->
+        <!-- 計算結果區域 -->
         <div class="result-group">
             <span class="result-title">計算結果</span>
             <div class="result-card">
@@ -180,62 +198,89 @@
             </div>
         </div>
 
-        <!-- 备注说明 -->
+        <!-- 備註說明 -->
         <div class="note-box">
             <span class="note-title">備註</span>
-            <p class="note-text">印花稅按照香港AVD Scale 2 (2025-02-26 生效) 計算，稅率按樓價分級累進計算，結果已四捨五入至最接近的$1。</p>
+            <p class="note-text">印花稅按照香港AVD Scale 2（2025-02-26 生效）標準計算，適用於「非首置、非公司、非額外住宅」物業，採分級累進稅率，結果已四捨五入至最接近的$1。</p>
+        </div>
+
+        <!-- 新增：官方稅率規則對照 -->
+        <div class="rate-rule">
+            <div class="rate-rule-title">香港AVD Scale 2 官方稅率（2025）</div>
+            <div class="rate-rule-text">
+                1. 400萬或以下：0.025%<br>
+                2. 400萬至664.2857萬：首400萬按0.025%，餘額按1.5%<br>
+                3. 664.2857萬至900萬：首400萬按0.025%，400萬至664.2857萬按1.5%，餘額按3%<br>
+                4. 900萬至2000萬：首900萬按對應級別計算，餘額按4%<br>
+                5. 2000萬以上：首2000萬按對應級別計算，餘額按5%
+            </div>
         </div>
     </div>
 
     <script>
-        // 获取DOM元素
+        // 獲取DOM元素
         const priceInput = document.getElementById('property-price');
         const fivePercentEl = document.getElementById('five-percent-amount');
         const stampDutyEl = document.getElementById('stamp-duty-amount');
         const ninetyfivePercentEl = document.getElementById('ninetyfive-percent-amount');
 
         /**
-         * 格式化金额为香港货币格式
-         * @param {number} amount - 金额数字
-         * @returns {string} 格式化后的HK$字符串
+         * 格式化金額為香港貨幣格式
+         * @param {number} amount - 金額數字
+         * @returns {string} 格式化後的HK$字符串
          */
         function formatHKD(amount) {
             return `HK$${Math.round(amount).toLocaleString('zh-HK')}`;
         }
 
         /**
-         * 根据2025 AVD Scale 2计算印花税
-         * @param {number} price - 楼价
-         * @returns {number} 印花税金额
+         * 嚴格按照2025 AVD Scale 2官方規則計算印花稅（修正核心邏輯）
+         * @param {number} price - 樓價
+         * @returns {number} 印花稅金額
          */
         function calculateAVD(price) {
             let duty = 0;
-            const tiers = [
-                { max: 4000000, rate: 0.00025 }, // 400万或以下：0.025%
-                { max: 6642857, rate: 0.015 },   // 400万-664.2857万：1.5%
-                { max: 9000000, rate: 0.03 },    // 664.2857万-900万：3%
-                { max: 20000000, rate: 0.04 },   // 900万-2000万：4%
-                { max: Infinity, rate: 0.05 }    // 2000万以上：5%
-            ];
+            // 官方分級標準（精確到元）
+            const tier1Max = 4000000;    // 第一級上限
+            const tier2Max = 6642857;    // 第二級上限
+            const tier3Max = 9000000;    // 第三級上限
+            const tier4Max = 20000000;   // 第四級上限
 
-            // 按分级税率计算
-            if (price <= tiers[0].max) {
-                duty = price * tiers[0].rate;
-            } else if (price <= tiers[1].max) {
-                duty = 4000000 * tiers[0].rate + (price - 4000000) * tiers[1].rate;
-            } else if (price <= tiers[2].max) {
-                duty = 4000000 * tiers[0].rate + (6642857 - 4000000) * tiers[1].rate + (price - 6642857) * tiers[2].rate;
-            } else if (price <= tiers[3].max) {
-                duty = 4000000 * tiers[0].rate + (6642857 - 4000000) * tiers[1].rate + (9000000 - 6642857) * tiers[2].rate + (price - 9000000) * tiers[3].rate;
+            // 分級累進計算（完全對應官方公式）
+            if (price <= tier1Max) {
+                // 第一級：全額按0.025%
+                duty = price * 0.00025;
+            } else if (price <= tier2Max) {
+                // 第二級：首400萬按0.025%，餘額按1.5%
+                duty = (tier1Max * 0.00025) + ((price - tier1Max) * 0.015);
+            } else if (price <= tier3Max) {
+                // 第三級：分三段計算
+                const tier1Duty = tier1Max * 0.00025;
+                const tier2Duty = (tier2Max - tier1Max) * 0.015;
+                const tier3Duty = (price - tier2Max) * 0.03;
+                duty = tier1Duty + tier2Duty + tier3Duty;
+            } else if (price <= tier4Max) {
+                // 第四級：分四段計算
+                const tier1Duty = tier1Max * 0.00025;
+                const tier2Duty = (tier2Max - tier1Max) * 0.015;
+                const tier3Duty = (tier3Max - tier2Max) * 0.03;
+                const tier4Duty = (price - tier3Max) * 0.04;
+                duty = tier1Duty + tier2Duty + tier3Duty + tier4Duty;
             } else {
-                duty = 4000000 * tiers[0].rate + (6642857 - 4000000) * tiers[1].rate + (9000000 - 6642857) * tiers[2].rate + (20000000 - 9000000) * tiers[3].rate + (price - 20000000) * tiers[4].rate;
+                // 第五級：分五段計算
+                const tier1Duty = tier1Max * 0.00025;
+                const tier2Duty = (tier2Max - tier1Max) * 0.015;
+                const tier3Duty = (tier3Max - tier2Max) * 0.03;
+                const tier4Duty = (tier4Max - tier3Max) * 0.04;
+                const tier5Duty = (price - tier4Max) * 0.05;
+                duty = tier1Duty + tier2Duty + tier3Duty + tier4Duty + tier5Duty;
             }
 
             return duty;
         }
 
         /**
-         * 主计算函数
+         * 主計算函數
          */
         function calculateAll() {
             const price = Number(priceInput.value) || 0;
@@ -243,16 +288,15 @@
             const ninetyfivePercent = price * 0.95;
             const stampDuty = calculateAVD(price);
 
-            // 更新页面显示
+            // 更新頁面顯示
             fivePercentEl.textContent = formatHKD(fivePercent);
             stampDutyEl.textContent = formatHKD(stampDuty);
             ninetyfivePercentEl.textContent = formatHKD(ninetyfivePercent);
         }
 
-        // 初始计算 + 输入变化时重新计算
+        // 初始計算 + 輸入變化時重新計算
         calculateAll();
         priceInput.addEventListener('input', calculateAll);
-    </style>
     </script>
 </body>
 </html>
