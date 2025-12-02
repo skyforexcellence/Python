@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>香港樓花計算機</title>
+    <style>
+        :root {
+            --primary: #2c5aa0;
+            --primary-dark: #1e3d72;
+            --secondary: #f0b323;
+            --accent: #e74c3c;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --success: #28a745;
+            --border-radius: 8px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, 'Microsoft JhengHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+        }
+        
+        h1 {
+            font-size: 28px;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: var(--gray);
+            margin-bottom: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        
+        .card:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-title i {
+            margin-right: 10px;
+            color: var(--secondary);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        select, input[type="number"], input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--light-gray);
+            border-radius: var(--border-radius);
+            font-size: 15px;
+            transition: var(--transition);
+            background: white;
+        }
+        
+        select:focus, input[type="number"]:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
+        }
+        
+        .counter {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--light);
+            border-radius: var(--border-radius);
+            padding: 10px 15px;
+        }
+        
+        .counter button {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .counter button:hover {
+            background: var(--primary-dark);
+        }
+        
+        .counter span {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .slider-container {
+            margin: 20px 0;
+        }
+        
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .slider-label span:first-child {
+            font-weight: 500;
+        }
+        
+        .slider-label span:last-child {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: var(--light-gray);
+            border-radius: 3px;
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .slider::-webkit-slider-thumb:hover {
+            background: var(--primary-dark);
+            transform: scale(1.1);
+        }
+        
+        .calculate-btn {
+            width: 100%;
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 6px rgba(44, 90, 160, 0.2);
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(44, 90, 160, 0.3);
+        }
+        
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+        
+        .result-section {
+            display: none;
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 24px;
+            margin-top: 20px;
+            box-shadow: var(--shadow);
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .result-label {
+            font-size: 15px;
+            color: var(--gray);
+        }
+        
+        .result-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .highlight {
+            background: linear-gradient(to right, rgba(44, 90, 160, 0.1), rgba(240, 179, 35, 0.1));
+            border-left: 4px solid var(--secondary);
+            padding: 15px;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        }
+        
+        .note {
+            font-size: 12px;
+            color: var(--gray);
+            margin-top: 16px;
+            line-height: 1.4;
+            text-align: center;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            background: var(--light);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+        
+        .tab.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .icon {
+            display: inline-block;
+            width: 20px;
+            text-align: center;
+            margin-right: 8px;
+        }
+        
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            
+            .card {
+                padding: 16px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .visible {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>香港樓花計算機</h1>
+            <div class="subtitle">專業物業投資分析工具</div>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="property">物業資料</div>
+            <div class="tab" data-tab="cost">費用配置</div>
+            <div class="tab" data-tab="result">計算結果</div>
+        </div>
+        
+        <div class="tab-content active" id="property-tab">
+            <div class="card">
+                <div class="card-title"><span class="icon">🏠</span> 物業基本資料</div>
+                
+                <div class="form-group">
+                    <label>地區</label>
+                    <select id="region">
+                        <option value="ShaTin">沙田 Sha Tin</option>
+                        <option value="Central">中環 Central</option>
+                        <option value="MongKok">旺角 Mong Kok</option>
+                        <option value="TsuenWan">荃灣 Tsuen Wan</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>類型</label>
+                    <select id="propertyType">
+                        <option value="residential">住宅 Residential</option>
+                        <option value="commercial">商業 Commercial</option>
+                        <option value="industrial">工業 Industrial</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>實用面積 (平方呎)</label>
+                    <input type="number" id="area" value="500" min="100" max="5000">
+                </div>
+                
+                <div class="form-group">
+                    <label>樓齡</label>
+                    <div class="counter">
+                        <button id="ageMinus">-</button>
+                        <span id="ageValue">10 年</span>
+                        <button id="agePlus">+</button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>樓層</label>
+                    <div class="counter">
+                        <button id="floorMinus">-</button>
+                        <span id="floorValue">20 樓</span>
+                        <button id="floorPlus">+</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title"><span class="icon">🌄</span> 物業附加資料</div>
+                
+                <div class="form-group">
+                    <label>景觀</label>
+                    <select id="view">
+                        <option value="city">城市 City</option>
+                        <option value="sea">海景 Sea</option>
+                        <option value="mountain">山景 Mountain</option>
+                        <option value="park">公園 Park</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>步行至地鐵</label>
+                    <div class="counter">
+                        <button id="metroMinus">-</button>
+                        <span id="metroValue">8 分鐘</span>
+                        <button id="metroPlus">+</button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>校網評分</label>
+                    <div class="counter">
+                        <button id="schoolMinus">-</button>
+                        <span id="schoolValue">4</span>
+                        <button id="schoolPlus">+</button>
+                    </div>
+                </div>
+                
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>裝修係數</span>
+                        <span id="renovationValue">1.0</span>
+                    </div>
+                    <input type="range" min="0.5" max="2.0" step="0.1" value="1.0" class="slider" id="renovationSlider">
+                </div>
+                
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>市場乘數</span>
+                        <span id="marketValue">1.0</span>
+                    </div>
+                    <input type="range" min="0.5" max="2.0" step="0.1" value="1.0" class="slider" id="marketSlider">
+                </div>
+            </div>
+            
+            <button class="calculate-btn" id="nextToCost">下一步：費用配置</button>
+        </div>
+        
+        <div class="tab-content" id="cost-tab">
+            <div class="card">
+                <div class="card-title"><span class="icon">💰</span> 交易費用配置</div>
+                
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>佣金率</span>
+                        <span id="commissionValue">1%</span>
+                    </div>
+                    <input type="range" min="0" max="5" step="0.1" value="1" class="slider" id="commissionSlider">
+                </div>
+                
+                <div class="form-group">
+                    <label>律師費 (HKD)</label>
+                    <input type="number" id="legalFee" value="12000">
+                </div>
+                
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>按揭成數</span>
+                        <span id="mortgageValue">50%</span>
+                    </div>
+                    <input type="range" min="10" max="90" step="5" value="50" class="slider" id="mortgageSlider">
+                </div>
+                
+                <div class="form-group">
+                    <label>利率 (%)</label>
+                    <input type="number" id="interestRate" value="2.5" step="0.1" min="0.1" max="10">
+                </div>
+                
+                <div class="form-group">
+                    <label>還款年期</label>
+                    <div class="counter">
+                        <button id="yearsMinus">-</button>
+                        <span id="yearsValue">20 年</span>
+                        <button id="yearsPlus">+</button>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="calculate-btn" id="nextToResult">下一步：計算結果</button>
+        </div>
+        
+        <div class="tab-content" id="result-tab">
+            <div class="card">
+                <div class="card-title"><span class="icon">📊</span> 計算結果</div>
+                
+                <div class="form-group">
+                    <label>輸入樓宇價錢 (HKD)</label>
+                    <input type="number" id="propertyPrice" value="4000000">
+                </div>
+                
+                <div class="highlight">
+                    <div class="result-item">
+                        <div class="result-label">今天 5% 樓價</div>
+                        <div class="result-value" id="today5Percent">HK$200,000</div>
+                    </div>
+                    
+                    <div class="result-item">
+                        <div class="result-label">5天內 印花稅</div>
+                        <div class="result-value" id="stampDuty5days">HK$100</div>
+                    </div>
+                    
+                    <div class="result-item">
+                        <div class="result-label">120天 95% 樓價</div>
+                        <div class="result-value" id="after120days95Percent">HK$3,800,000</div>
+                    </div>
+                    
+                    <div class="result-item">
+                        <div class="result-label">總交易成本</div>
+                        <div class="result-value" id="totalCost">HK$4,012,100</div>
+                    </div>
+                    
+                    <div class="result-item">
+                        <div class="result-label">每月供款</div>
+                        <div class="result-value" id="monthlyPayment">HK$16,789</div>
+                    </div>
+                </div>
+                
+                <div class="note">
+                    印花稅按照香港AVD Scale 2(2025-02-26生效)計算，並四捨五入至最接近的$1。
+                </div>
+            </div>
+            
+            <button class="calculate-btn" id="recalculate">重新計算</button>
+        </div>
+    </div>
+
+    <script>
+        // 计数器功能
+        function setupCounter(buttonMinusId, buttonPlusId, valueId, min, max, unit = '') {
+            const minusBtn = document.getElementById(buttonMinusId);
+            const plusBtn = document.getElementById(buttonPlusId);
+            const valueSpan = document.getElementById(valueId);
+            
+            let value = parseInt(valueSpan.textContent);
+            
+            minusBtn.addEventListener('click', () => {
+                if (value > min) {
+                    value--;
+                    valueSpan.textContent = value + (unit ? ' ' + unit : '');
+                    calculateResults();
+                }
+            });
+            
+            plusBtn.addEventListener('click', () => {
+                if (value < max) {
+                    value++;
+                    valueSpan.textContent = value + (unit ? ' ' + unit : '');
+                    calculateResults();
+                }
+            });
+        }
+        
+        // 滑块功能
+        function setupSlider(sliderId, valueId, suffix = '') {
+            const slider = document.getElementById(sliderId);
+            const valueSpan = document.getElementById(valueId);
+            
+            slider.addEventListener('input', () => {
+                valueSpan.textContent = slider.value + suffix;
+                calculateResults();
+            });
+        }
+        
+        // 标签切换功能
+        function setupTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    
+                    // 移除所有active类
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(tc => tc.classList.remove('active'));
+                    
+                    // 添加active类到当前标签和内容
+                    tab.classList.add('active');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+            
+            // 下一步按钮
+            document.getElementById('nextToCost').addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(tc => tc.classList.remove('active'));
+                
+                document.querySelector('.tab[data-tab="cost"]').classList.add('active');
+                document.getElementById('cost-tab').classList.add('active');
+            });
+            
+            document.getElementById('nextToResult').addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(tc => tc.classList.remove('active'));
+                
+                document.querySelector('.tab[data-tab="result"]').classList.add('active');
+                document.getElementById('result-tab').classList.add('active');
+                
+                calculateResults();
+            });
+            
+            document.getElementById('recalculate').addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(tc => tc.classList.remove('active'));
+                
+                document.querySelector('.tab[data-tab="property"]').classList.add('active');
+                document.getElementById('property-tab').classList.add('active');
+            });
+        }
+        
+        // 计算结果
+        function calculateResults() {
+            const propertyPrice = parseInt(document.getElementById('propertyPrice').value);
+            const mortgagePercent = parseInt(document.getElementById('mortgageSlider').value) / 100;
+            const interestRate = parseFloat(document.getElementById('interestRate').value) / 100 / 12;
+            const loanYears = parseInt(document.getElementById('yearsValue').textContent);
+            const legalFee = parseInt(document.getElementById('legalFee').value);
+            const commissionRate = parseInt(document.getElementById('commissionSlider').value) / 100;
+            
+            // 计算5%楼价
+            const today5Percent = propertyPrice * 0.05;
+            document.getElementById('today5Percent').textContent = 'HK$' + formatNumber(today5Percent);
+            
+            // 计算5天内印花税（简化计算）
+            const stampDuty5days = calculateStampDuty(propertyPrice);
+            document.getElementById('stampDuty5days').textContent = 'HK$' + formatNumber(stampDuty5days);
+            
+            // 计算120天95%楼价
+            const after120days95Percent = propertyPrice * 0.95;
+            document.getElementById('after120days95Percent').textContent = 'HK$' + formatNumber(after120days95Percent);
+            
+            // 计算总成本
+            const commission = propertyPrice * commissionRate;
+            const totalCost = propertyPrice + stampDuty5days + legalFee + commission;
+            document.getElementById('totalCost').textContent = 'HK$' + formatNumber(totalCost);
+            
+            // 计算每月供款
+            const loanAmount = propertyPrice * mortgagePercent;
+            const numberOfPayments = loanYears * 12;
+            const monthlyPayment = calculateMonthlyPayment(loanAmount, interestRate, numberOfPayments);
+            document.getElementById('monthlyPayment').textContent = 'HK$' + formatNumber(monthlyPayment);
+        }
+        
+        // 计算印花税（简化版）
+        function calculateStampDuty(price) {
+            if (price <= 2000000) return Math.ceil(price * 0.01);
+            if (price <= 2173910) return Math.ceil(price * 0.02);
+            if (price <= 3000000) return Math.ceil(price * 0.03);
+            return Math.ceil(price * 0.04);
+        }
+        
+        // 计算每月供款
+        function calculateMonthlyPayment(principal, monthlyRate, numberOfPayments) {
+            if (monthlyRate === 0) {
+                return principal / numberOfPayments;
+            }
+            return principal * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments) / 
+                   (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+        }
+        
+        // 数字格式化
+        function formatNumber(num) {
+            return num.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+        
+        // 初始化计数器
+        setupCounter('ageMinus', 'agePlus', 'ageValue', 0, 100, '年');
+        setupCounter('floorMinus', 'floorPlus', 'floorValue', 1, 100, '樓');
+        setupCounter('metroMinus', 'metroPlus', 'metroValue', 1, 30, '分鐘');
+        setupCounter('schoolMinus', 'schoolPlus', 'schoolValue', 1, 10);
+        setupCounter('yearsMinus', 'yearsPlus', 'yearsValue', 5, 30, '年');
+        
+        // 初始化滑块
+        setupSlider('renovationSlider', 'renovationValue');
+        setupSlider('marketSlider', 'marketValue');
+        setupSlider('commissionSlider', 'commissionValue', '%');
+        setupSlider('mortgageSlider', 'mortgageValue', '%');
+        
+        // 初始化标签
+        setupTabs();
+        
+        // 楼价输入框变化时重新计算
+        document.getElementById('propertyPrice').addEventListener('input', calculateResults);
+        
+        // 初始计算
+        calculateResults();
+    </script>
+</body>
+</html>
